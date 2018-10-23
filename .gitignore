@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/OpenHackTokyo20/v15/.suo
+/Ratings/.vs/Ratings/v15
+/Ratings
