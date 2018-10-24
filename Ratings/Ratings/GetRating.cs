@@ -14,20 +14,49 @@ namespace Ratings
     {
         [FunctionName("GetRating")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRating/{ratingId}")] HttpRequest req,
+            [CosmosDB(
+                databaseName: "miyaharahack20",
+                collectionName: "rating",
+                //PartitionKey= "/productId",
+                ConnectionStringSetting = "CosmosDBConnection2",
+                Id = "{ratingId}")] RatingItem ratingItem,
+        ILogger log)
         {
+            //string ratingId = req.Query["ratingId"];
             log.LogInformation("C# HTTP trigger function processed a request.");
+            if (ratingItem == null)
+            {
+                log.LogInformation("Rating item not found");
+            }
+            else
+            {
+                log.LogInformation("Found rating item");
+            }
+            //string ratingId = req.Query["ratingId"];
+            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            //dynamic data = JsonConvert.DeserializeObject(requestBody);
+            //ratingId = ratingId ?? data?.ratingId;
+            //return ratingItem != null
+            //    ? (ActionResult)new OkObjectResult($"{ratingItem}")
+            //    : new BadRequestObjectResult("Please check rating id.");
+            return ratingItem != null
+                ? (ActionResult)new OkObjectResult($"{JsonConvert.SerializeObject(ratingItem)}")
+                : new BadRequestObjectResult("404 Not Found");
+            //return jsonToReturn;
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
+    }
+
+    public class RatingItem
+    { 
+        public string id { get; set; }
+        public string userId { get; set; }
+        public string productId { get; set; }
+        public string timestamp { get; set; }
+        public string locationName { get; set; }
+        public string rating { get; set; }
+        public string userNotes { get; set; }
+
     }
 }
