@@ -15,12 +15,12 @@ namespace Ratings
     {
         [FunctionName("GetRatings")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetRatings/{userId}")]HttpRequest req,
             [CosmosDB(
                 databaseName: "openhack20",
                 collectionName: "rating",
                 ConnectionStringSetting = "CosmosDBConnection",
-                SqlQuery = "SELECT * FROM c")] IEnumerable<Ratings> items,
+                SqlQuery = "SELECT * FROM c WHERE c.userId = {userId}")] IEnumerable<Ratings> items,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
