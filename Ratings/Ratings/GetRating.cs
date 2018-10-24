@@ -14,20 +14,41 @@ namespace Ratings
     {
         [FunctionName("GetRating")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRating/{ratingId}")] HttpRequest req,
+            [CosmosDB(
+                //databaseName: "openhack20",
+                databaseName: "miyaharahack20",
+                collectionName: "rating",
+                //PartitionKey= "/productId",
+                ConnectionStringSetting = "CosmosDBConnection2",
+                Id = "{ratingId}")] RatingItem ratingItem,
+        ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            if (ratingItem == null)
+            {
+                log.LogInformation("Rating item not found");
+            }
+            else
+            {
+                log.LogInformation("Found rating item");
+            }
+            return ratingItem != null
+                ? (ActionResult)new OkObjectResult($"{JsonConvert.SerializeObject(ratingItem)}")
+            : new NotFoundObjectResult("404 Not Found");
+        
         }
+    }
+
+    public class RatingItem
+    { 
+        public string id { get; set; }
+        public string userId { get; set; }
+        public string productId { get; set; }
+        public DateTime timestamp { get; set; }
+        public string locationName { get; set; }
+        public int rating { get; set; }
+        public string userNotes { get; set; }
+
     }
 }
