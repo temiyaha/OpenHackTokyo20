@@ -29,9 +29,8 @@ namespace Ratings
             {
                 log.LogInformation($"id={item.id} userId={item.userId} productId={item.productId}");
             }
-            var json = JsonConvert.SerializeObject(items);
 
-            return new OkObjectResult(json);
+            return new OkObjectResult(items);
 
         }
     }
