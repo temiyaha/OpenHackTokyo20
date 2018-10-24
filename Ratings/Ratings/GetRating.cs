@@ -16,16 +16,15 @@ namespace Ratings
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRating/{ratingId}")] HttpRequest req,
             [CosmosDB(
-                //databaseName: "openhack20",
-                databaseName: "miyaharahack20",
+                databaseName: "openhack20",
                 collectionName: "rating",
-                //PartitionKey= "/productId",
-                ConnectionStringSetting = "CosmosDBConnection2",
-                Id = "{ratingId}")] RatingItem ratingItem,
+                ConnectionStringSetting = "CosmosDBConnection",
+                Id = "{ratingId}"
+                )] Ratings ratings,
         ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            if (ratingItem == null)
+            if (ratings == null)
             {
                 log.LogInformation("Rating item not found");
             }
@@ -33,22 +32,9 @@ namespace Ratings
             {
                 log.LogInformation("Found rating item");
             }
-            return ratingItem != null
-                ? (ActionResult)new OkObjectResult($"{JsonConvert.SerializeObject(ratingItem)}")
+            return ratings != null
+                ? (ActionResult)new OkObjectResult($"{JsonConvert.SerializeObject(ratings)}")
             : new NotFoundObjectResult("404 Not Found");
-        
         }
-    }
-
-    public class RatingItem
-    { 
-        public string id { get; set; }
-        public string userId { get; set; }
-        public string productId { get; set; }
-        public DateTime timestamp { get; set; }
-        public string locationName { get; set; }
-        public int rating { get; set; }
-        public string userNotes { get; set; }
-
     }
 }
