@@ -16,6 +16,7 @@ namespace Ratings
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRating/{ratingId}")] HttpRequest req,
             [CosmosDB(
+                //databaseName: "openhack20",
                 databaseName: "miyaharahack20",
                 collectionName: "rating",
                 //PartitionKey= "/productId",
@@ -23,7 +24,6 @@ namespace Ratings
                 Id = "{ratingId}")] RatingItem ratingItem,
         ILogger log)
         {
-            //string ratingId = req.Query["ratingId"];
             log.LogInformation("C# HTTP trigger function processed a request.");
             if (ratingItem == null)
             {
@@ -33,18 +33,10 @@ namespace Ratings
             {
                 log.LogInformation("Found rating item");
             }
-            //string ratingId = req.Query["ratingId"];
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-            //ratingId = ratingId ?? data?.ratingId;
-            //return ratingItem != null
-            //    ? (ActionResult)new OkObjectResult($"{ratingItem}")
-            //    : new BadRequestObjectResult("Please check rating id.");
             return ratingItem != null
                 ? (ActionResult)new OkObjectResult($"{JsonConvert.SerializeObject(ratingItem)}")
-                : new BadRequestObjectResult("404 Not Found");
-            //return jsonToReturn;
-
+            : new NotFoundObjectResult("404 Not Found");
+        
         }
     }
 
